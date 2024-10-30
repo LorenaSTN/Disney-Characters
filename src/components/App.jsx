@@ -2,7 +2,7 @@ import "../scss/App.scss";
 import CharactersList from "./CharactersList";
 import { useEffect, useState } from "react";
 import charactersApi from "./services/charactersApi";
-import { Route, Routes, Link } from "react-router-dom";
+import { Route, Routes, Link, useLocation, matchPath } from "react-router-dom";
 
 function App() {
   const [characters, setCharacters] = useState([]);
@@ -15,26 +15,7 @@ function App() {
     }
 
     const data = await charactersApi(name);
-
-    const updatedCharacters = await Promise.all(
-      data.map(async (character) => {
-        const imageSrc = await checkImage(character.image);
-        return { ...character, image: imageSrc };
-      })
-    );
-
-    setCharacters(updatedCharacters);
-  };
-
-  const checkImage = async (imageUrl) => {
-    try {
-      const response = await fetch(imageUrl, { method: "HEAD" });
-      if (response.ok) {
-        return imageUrl;
-      }
-    } catch {}
-
-    return "https://m.media-amazon.com/images/I/719t3jd2NeL.png";
+    setCharacters(data);
   };
 
   useEffect(() => {
@@ -49,6 +30,14 @@ function App() {
     ev.preventDefault();
     fetchCharacters(searchTerm);
   };
+
+  const { pathname } = useLocation();
+  const routeInfo = matchPath("/detail/:characterId", pathname);
+  const idCharacter =
+    routeInfo !== null ? parseInt(routeInfo.params.characterId) : null;
+  const characterSelected = characters.find((character) => {
+    return character.id === idCharacter;
+  });
 
   return (
     <>
