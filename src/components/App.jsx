@@ -2,11 +2,22 @@ import "../scss/App.scss";
 import CharactersList from "./CharactersList";
 import { useEffect, useState } from "react";
 import charactersApi from "./services/charactersApi";
-import { Route, Routes, Link, useLocation, matchPath } from "react-router-dom";
+import { Route, Routes, Link } from "react-router-dom";
+import localStorage from "./services/localStorage";
 
 function App() {
   const [characters, setCharacters] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchValue, setSearchValue] = useState(
+    localStorage.get("searchValue", "")
+  );
+  const [inputValue, setInputValue] = useState(
+    localStorage.get("inputValue", "")
+  );
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [favourites, setFavourites] = useState(
+    localStorage.get("favourites", [])
+  );
 
   const fetchCharacters = async (name = "") => {
     if (!name.trim()) {
@@ -19,25 +30,45 @@ function App() {
   };
 
   useEffect(() => {
-    fetchCharacters(searchTerm);
-  }, [searchTerm]);
+    if (searchValue) {
+      fetchCharacters(searchValue);
+    }
+  }, [searchValue]);
 
-  const handleSearchChange = (ev) => {
-    setSearchTerm(ev.target.value);
-  };
+  useEffect(() => {
+    localStorage.set("searchValue", searchValue);
+    localStorage.set("inputValue", inputValue);
+    localStorage.set("favourites", favourites);
+  });
 
   const handleSearchSubmit = (ev) => {
     ev.preventDefault();
-    fetchCharacters(searchTerm);
+    setSearchValue(inputValue);
   };
 
-  const { pathname } = useLocation();
-  const routeInfo = matchPath("/detail/:characterId", pathname);
-  const idCharacter =
-    routeInfo !== null ? parseInt(routeInfo.params.characterId) : null;
-  const characterSelected = characters.find((character) => {
-    return character.id === idCharacter;
-  });
+  const handleCharacterClick = (character) => {
+    setSelectedCharacter(character);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedCharacter(null);
+  };
+
+  const addToFavourites = () => {
+    if (
+      selectedCharacter &&
+      !favourites.find((fav) => fav.id === selectedCharacter.id)
+    ) {
+      setFavourites([...favourites, selectedCharacter]);
+    }
+    closeModal();
+  };
+
+  const removeFromFavourites = (characterId) => {
+    setFavourites(favourites.filter((fav) => fav.id !== characterId));
+  };
 
   return (
     <>
@@ -75,9 +106,16 @@ function App() {
             <main className="app__main">
               <CharactersList
                 characters={characters}
-                handleSearchChange={handleSearchChange}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
                 handleSearchSubmit={handleSearchSubmit}
-                searchTerm={searchTerm}
+                handleCharacterClick={handleCharacterClick}
+                closeModal={closeModal}
+                isModalOpen={isModalOpen}
+                selectedCharacter={selectedCharacter}
+                addToFavourites={addToFavourites}
+                removeFromFavourites={removeFromFavourites}
+                favourites={favourites}
               />
             </main>
           }

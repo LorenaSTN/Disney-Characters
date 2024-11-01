@@ -1,42 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import Characters from "./Characters";
 import "../scss/main/CharactersList.scss";
 import { Link } from "react-router-dom";
 
 function CharactersList({
   characters,
-  handleSearchChange,
-  searchTerm,
+  inputValue,
+  setInputValue,
   handleSearchSubmit,
+  handleCharacterClick,
+  closeModal,
+  isModalOpen,
+  selectedCharacter,
+  addToFavourites,
+  removeFromFavourites,
+  favourites,
 }) {
-  const [selectedCharacter, setSelectedCharacter] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [favorites, setFavorites] = useState([]);
-
-  const handleCharacterClick = (character) => {
-    setSelectedCharacter(character);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedCharacter(null);
-  };
-
-  const addToFavorites = () => {
-    if (
-      selectedCharacter &&
-      !favorites.find((fav) => fav.id === selectedCharacter.id)
-    ) {
-      setFavorites([...favorites, selectedCharacter]);
-    }
-    closeModal();
-  };
-
-  const removeFromFavorites = (characterId) => {
-    setFavorites(favorites.filter((fav) => fav.id !== characterId));
-  };
-
   const charactersElements = characters.map((character) => (
     <Characters
       key={character.id}
@@ -45,11 +24,11 @@ function CharactersList({
     />
   ));
 
-  const favoriteElements = favorites.map((favorite) => (
-    <li key={favorite.id} className="favouritesList__item">
-      <span>{favorite.name}</span>
+  const favouriteElements = favourites.map((favourite) => (
+    <li key={favourite.id} className="favouritesList__item">
+      <span className="favouritesList__span">{favourite.name}</span>
       <button
-        onClick={() => removeFromFavorites(favorite.id)}
+        onClick={() => removeFromFavourites(favourite.id)}
         className="favouritesList__remove"
       >
         <i className="fa-solid fa-xmark"></i>
@@ -62,8 +41,8 @@ function CharactersList({
       {isModalOpen && (
         <div className="modal">
           <div className="modal__content">
-            <h3>Add {selectedCharacter.name} to Favorites?</h3>
-            <button onClick={addToFavorites} className="modal__button">
+            <h3>Add {selectedCharacter.name} to Favourites?</h3>
+            <button onClick={addToFavourites} className="modal__button">
               Yes
             </button>
             <button onClick={closeModal} className="modal__button">
@@ -77,14 +56,15 @@ function CharactersList({
         <div></div>
         <div></div>
       </section>
+
       <div className="charactersList__container">
         <section className="charactersList1">
           <div className="charactersList1__title">
-            <h2>Favourite's List:</h2>
+            <h2>Favs</h2>
           </div>
           <ul className="favouritesList">
-            {favorites.length > 0 ? (
-              favoriteElements
+            {favourites.length > 0 ? (
+              favouriteElements
             ) : (
               <p className="favouritesList__p">
                 No favourite characters added yet.
@@ -101,13 +81,12 @@ function CharactersList({
             </Link>
           </div>
           <div className="charactersList__text">
-            <form action="" onSubmit={handleSearchSubmit}>
+            <form onSubmit={handleSearchSubmit}>
               <input
-                id="name"
                 type="text"
                 placeholder="Character's name"
-                value={searchTerm}
-                onChange={handleSearchChange}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 className="charactersList__input"
               />
               <button type="submit" className="charactersList__button">
