@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Characters from "./Characters";
 import "../scss/main/CharactersList.scss";
 import { Link } from "react-router-dom";
@@ -16,6 +16,24 @@ function CharactersList({
   removeFromFavourites,
   favourites,
 }) {
+  const [isDuplicateModal, setIsDuplicateModal] = useState(false);
+
+  const handleAddToFavourites = () => {
+    if (
+      selectedCharacter &&
+      !favourites.find((fav) => fav.id === selectedCharacter.id)
+    ) {
+      addToFavourites();
+    } else {
+      setIsDuplicateModal(true);
+    }
+    closeModal();
+  };
+
+  const closeDuplicateModal = () => {
+    setIsDuplicateModal(false);
+  };
+
   const charactersElements = characters.map((character) => (
     <Characters
       key={character.id}
@@ -38,11 +56,11 @@ function CharactersList({
 
   return (
     <>
-      {isModalOpen && (
+      {isModalOpen && selectedCharacter && (
         <div className="modal">
           <div className="modal__content">
             <h3>Add {selectedCharacter.name} to Favourites?</h3>
-            <button onClick={addToFavourites} className="modal__button">
+            <button onClick={handleAddToFavourites} className="modal__button">
               Yes
             </button>
             <button onClick={closeModal} className="modal__button">
@@ -51,6 +69,18 @@ function CharactersList({
           </div>
         </div>
       )}
+
+      {isDuplicateModal && selectedCharacter && (
+        <div className="modal">
+          <div className="modal__content">
+            <h3>{selectedCharacter.name} is already in Favourites!</h3>
+            <button onClick={closeDuplicateModal} className="modal__button">
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       <section className="loader">
         <div></div>
         <div></div>
@@ -72,6 +102,7 @@ function CharactersList({
             )}
           </ul>
         </section>
+
         <section className="charactersList2">
           <div className="charactersList__home">
             <Link to={"/"}>

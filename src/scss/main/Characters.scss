@@ -1,16 +1,18 @@
 .characters {
   &__card {
-    margin: 20px auto;
+    margin: 20px;
     padding: 20px;
-    width: 250px;
-    height: 350px;
-    font-size: 18px;
+    width: 150px;
+    height: 250px;
+    font-size: 16px;
 
-    background-color: #ffffff;
+    background-color: #a2d8f1;
     border-radius: 15px;
     cursor: pointer;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px, rgba(0, 0, 0, 0.1) 0px 4px 6px;
-    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+      rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
+      rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+
     position: relative;
     perspective: 1000px;
     transform-style: preserve-3d;
@@ -22,16 +24,17 @@
   }
 
   &__photo {
-    width: 150px;
+    width: 100px;
     height: auto;
     border-radius: 8px;
   }
 
   &__name {
-    color: #000550;
+    color: #258ebf;
     font-weight: bold;
-    margin: 10px 0;
-    font-size: 26px;
+    margin: 0;
+    font-size: 16px;
+    width: 100px;
   }
 }
 
@@ -51,7 +54,6 @@
   align-items: center;
   backface-visibility: hidden;
   border-radius: 15px;
-  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -60,13 +62,15 @@
 }
 
 .back {
-  background-color: #0279b0;
-  color: #b5e5f0;
+  background-color: #000333;
+  color: #fff5ed;
   transform: rotateY(180deg);
   overflow-y: scroll;
+  padding: 20px;
+  font-size: 12px;
 
   &__title {
-    font-size: 28px;
+    font-size: 16px;
     margin: 10px;
   }
 }
